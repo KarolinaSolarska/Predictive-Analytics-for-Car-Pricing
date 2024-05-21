@@ -13,7 +13,6 @@ This project aims to analyze automotive advertisements from the Otomoto platform
 - `data/`: Contains raw and processed datasets.
 - `notebooks/`: Jupyter notebooks for data collection, cleaning, EDA, and modeling.
 - `scripts/`: Python scripts for various tasks such as data scraping, preprocessing, and model training.
-- `app/`: Code for the prediction tool application.
 - `.gitignore`: List of files and directories to ignore in the repository.
 - `requirements.txt`: List of dependencies.
 - `README.md`: Project overview and instructions.
