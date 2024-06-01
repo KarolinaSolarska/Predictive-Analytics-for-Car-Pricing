@@ -132,3 +132,5 @@ dmypy.json
 # data files
 data/raw/
 data/processed/
+
+.DS_Store
