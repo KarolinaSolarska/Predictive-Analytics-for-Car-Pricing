@@ -211,8 +211,11 @@ def clean_data(data):
     # Remove the prefix from the column names
     data.columns = data.columns.str.replace('condition_', '')
 
-
     ### price
+    # change data type as numeric
+    data['price'] = pd.to_numeric(data['price'], errors='coerce')
+    # drop rows with missing values which arise after conversion
+    data = data.dropna(subset=['price'])
 
     ### currency
     # delete observations where currency not in PLN or EUR
