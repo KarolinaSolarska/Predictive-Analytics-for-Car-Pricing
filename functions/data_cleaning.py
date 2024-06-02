@@ -51,18 +51,13 @@ def clean_data(data):
     ### brand
     unique_brand = data['brand'].value_counts()
     # Identify brands with counts >= 100 - maybe define by brand - to have always the same brands
-    brands_to_keep = unique_brand[unique_brand >= 100].index
+    brands_to_keep = unique_brand[unique_brand >= 1000].index
     # Filter the dataset to keep only these brands
     data = data[data['brand'].isin(brands_to_keep)]
-
-    # Perform one-hot encoding for the 'brand' column
-    data = pd.get_dummies(data, columns=['brand'], prefix='', prefix_sep='')
-
 
     ### year_production
     # Convert 'year_production' to integer
     data['year_production'] = data['year_production'].astype(int)
-
 
     ### mileage
     # Remove ' km' from the strings and any spaces, then convert to integer
@@ -80,12 +75,6 @@ def clean_data(data):
     ### fuel_type
     # Remove outliers
     data = data[~data['fuel_type'].isin(['Benzyna+CNG', 'Wodór'])]
-    # Perform one-hot encoding
-    data = pd.get_dummies(data, columns=['fuel_type'])
-
-    # Remove the 'fuel_type_' prefix from the column names
-    data.columns = data.columns.str.replace('fuel_type_', '')
-
 
     ### power
     # Remove ' km' from the strings and any spaces, then convert to integer
@@ -111,12 +100,6 @@ def clean_data(data):
         '4x4 (dołączany ręcznie)': '4x4'
     })
 
-    # Perform one-hot encoding
-    data = pd.get_dummies(data, columns=['drive_type'])
-
-    # Remove the prefix from the column names
-    data.columns = data.columns.str.replace('drive_type_', '')
-
 
     ### body_type
     body_type_mapping = {
@@ -130,11 +113,6 @@ def clean_data(data):
     data['body_type'] = data['body_type'].replace(body_type_mapping)
     # delete observations where body type not in the mapping dictionary
     data = data[data['body_type'].isin(body_type_mapping.values())]
-    # Perform one-hot encoding
-    data = pd.get_dummies(data, columns=['body_type'])
-
-    # Remove the prefix from the column names
-    data.columns = data.columns.str.replace('body_type_', '')
 
 
     ### doors
@@ -179,10 +157,7 @@ def clean_data(data):
     data = data[data['color'].isin(color_mapping.keys())]
     # First, translate the categories to English
     data['color'] = data['color'].replace(color_mapping)
-    # Perform one-hot encoding 
-    data = pd.get_dummies(data, columns=['color'])
-    # Remove the prefix from the column names
-    data.columns = data.columns.str.replace('color_', '')
+
 
     ### accident_free
     # Replace 'Tak' with 1 and fill missing values with 0
@@ -205,11 +180,6 @@ def clean_data(data):
     # First, translate the categories to English
     data['condition'] = data['condition'].replace(condition_mapping)
 
-    # Perform one-hot encoding
-    data = pd.get_dummies(data, columns=['condition'])
-
-    # Remove the prefix from the column names
-    data.columns = data.columns.str.replace('condition_', '')
 
     ### price
     # change data type as numeric
@@ -228,5 +198,26 @@ def clean_data(data):
     data['currency'] = 'PLN'
     # Convert to integer
     data['price'] = data['price'].astype(int)
+
+
+    ### one-hot encoding
+    one_hot_cols = ['brand', 'fuel_type', 'drive_type', 'body_type', 'color', 'condition']
+    data = pd.get_dummies(data, columns=one_hot_cols, drop_first=True)
+    # replace all spaces in colnames with underscores
+    data.columns = data.columns.str.replace(' ', '_')
+
+    # drop currency column
+    data = data.drop(columns=['currency'])
+
+    """# Remove the 'fuel_type_' prefix from the column names
+    data.columns = data.columns.str.replace('fuel_type_', '')
+    # Remove the prefix from the column names
+    data.columns = data.columns.str.replace('drive_type_', '')
+    # Remove the prefix from the column names
+    data.columns = data.columns.str.replace('body_type_', '')
+    # Remove the prefix from the column names
+    data.columns = data.columns.str.replace('color_', '')
+    # Remove the prefix from the column names
+    data.columns = data.columns.str.replace('condition_', '')"""
 
     return data
