@@ -49,15 +49,20 @@ def clean_data(data):
     data = data.dropna(subset=cols_to_drop_na)
 
     ### brand
-    unique_brand = data['brand'].value_counts()
-    # Identify brands with counts >= 100 - maybe define by brand - to have always the same brands
-    brands_to_keep = unique_brand[unique_brand >= 1000].index
+    # Identify brands with counts >= 1000 - defined during code development and hardoced
+    brands_to_keep = ['BMW', 'Audi', 'Ford', 'Skoda', 'Renault', 'Peugeot', 'Volvo', 'Kia', 'Hyundai', 'Citroën', 'Nissan', 
+                    'Mazda', 'Seat', 'Fiat', 'Honda', 'Volkswagen', 'Mercedes-Benz', 'Suzuki', 'Jeep', 'Opel', 'Dacia', 
+                    'MINI', 'Mitsubishi', 'Toyota', 'Land Rover', 'Lexus','Chevrolet', 'Alfa Romeo', 'Dodge', 'Jaguar', 'Subaru']
+
     # Filter the dataset to keep only these brands
     data = data[data['brand'].isin(brands_to_keep)]
 
     ### year_production
     # Convert 'year_production' to integer
     data['year_production'] = data['year_production'].astype(int)
+
+    # Filter the dataset to keep only cars produced after 1999
+    data = data[data['year_production'] > 1999]
 
     ### mileage
     # Remove ' km' from the strings and any spaces, then convert to integer
