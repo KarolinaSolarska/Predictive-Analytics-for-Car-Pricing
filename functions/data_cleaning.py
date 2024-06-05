@@ -38,7 +38,7 @@ def prepare_data(data):
 
     return data
 
-def clean_data(data):
+def clean_data(data, one_hot_encode=False, doors=False):
 
     # drop columns
     cols_to_delete = ['model', 'metallic', 'country_origin', 'first_owner']
@@ -119,22 +119,21 @@ def clean_data(data):
     # delete observations where body type not in the mapping dictionary
     data = data[data['body_type'].isin(body_type_mapping.values())]
 
-
-    ### doors
-    # Convert to integer
-    data['doors'] = data['doors'].astype(int)
-    # remove values > 5
-    data = data[data['doors'] <= 5]
-    # change the number of doors to binary values
-    data['doors'] = data['doors'].replace({
-        2: 0,
-        3: 0,
-        4: 1,
-        5: 1
-    })
-
-    # rename the doors column
-    data = data.rename(columns={'doors': 'doors_5'})
+    if doors: 
+        ### doors
+        # Convert to integer
+        data['doors'] = data['doors'].astype(int)
+        # remove values > 5
+        data = data[data['doors'] <= 5]
+        # change the number of doors to binary values
+        data['doors'] = data['doors'].replace({
+            2: 0,
+            3: 0,
+            4: 1,
+            5: 1
+        })
+        # rename the doors column
+        data = data.rename(columns={'doors': 'doors_5'})
 
     ### color
     # define a mapping dictionary for color
@@ -204,25 +203,25 @@ def clean_data(data):
     # Convert to integer
     data['price'] = data['price'].astype(int)
 
+    if one_hot_encode == True:
+        ### one-hot encoding
+        one_hot_cols = ['brand', 'fuel_type', 'drive_type', 'body_type', 'color', 'condition']
+        data = pd.get_dummies(data, columns=one_hot_cols, drop_first=True)
+        # replace all spaces in colnames with underscores
+        data.columns = data.columns.str.replace(' ', '_')
 
-    ### one-hot encoding
-    one_hot_cols = ['brand', 'fuel_type', 'drive_type', 'body_type', 'color', 'condition']
-    data = pd.get_dummies(data, columns=one_hot_cols, drop_first=True)
-    # replace all spaces in colnames with underscores
-    data.columns = data.columns.str.replace(' ', '_')
+        # drop currency column
+        data = data.drop(columns=['currency'])
 
-    # drop currency column
-    data = data.drop(columns=['currency'])
-
-    """# Remove the 'fuel_type_' prefix from the column names
-    data.columns = data.columns.str.replace('fuel_type_', '')
-    # Remove the prefix from the column names
-    data.columns = data.columns.str.replace('drive_type_', '')
-    # Remove the prefix from the column names
-    data.columns = data.columns.str.replace('body_type_', '')
-    # Remove the prefix from the column names
-    data.columns = data.columns.str.replace('color_', '')
-    # Remove the prefix from the column names
-    data.columns = data.columns.str.replace('condition_', '')"""
+        """# Remove the 'fuel_type_' prefix from the column names
+        data.columns = data.columns.str.replace('fuel_type_', '')
+        # Remove the prefix from the column names
+        data.columns = data.columns.str.replace('drive_type_', '')
+        # Remove the prefix from the column names
+        data.columns = data.columns.str.replace('body_type_', '')
+        # Remove the prefix from the column names
+        data.columns = data.columns.str.replace('color_', '')
+        # Remove the prefix from the column names
+        data.columns = data.columns.str.replace('condition_', '')"""
 
     return data
