@@ -2,8 +2,15 @@ import os
 import logging
 import datetime
 import sys
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.metrics import mean_squared_error
 from sklearn.feature_selection import RFE
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.inspection import permutation_importance
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, KFold, cross_val_score, train_test_split
+
 
 def logger(name, log_folder):
     """
@@ -157,7 +164,7 @@ def predict_model(model, df_test, target_column, feature_columns, charts=False):
     """
     # Initialize logging
     log_folder = os.path.join('C:\\Users\\micha\\OneDrive\\Dokumenty\\Studia\\Development')
-    log_file = os.path.join(log_folder, 'Prediction_Log_' + datetime.now().strftime("%Y%m%d_%H%M%S") + ".log")
+    log_file = os.path.join(log_folder, 'Prediction_Log_' + datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + ".log")
     logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
     
     # Step 1: Split test data into features (X) and target (y)
@@ -185,12 +192,6 @@ def predict_model(model, df_test, target_column, feature_columns, charts=False):
         plt.title("Feature Importance")
         plt.show()
         
-        # Prediction charts
-        plt.scatter(y_test, y_pred)
-        plt.xlabel("Actual Values")
-        plt.ylabel("Predicted Values")
-        plt.title("Actual vs. Predicted Values")
-        plt.show()
     
     logging.info("Prediction and evaluation completed.")
     return mse, y_pred
